@@ -1,0 +1,12 @@
+name: recruitment-task-shinyapp
+title: recruitment-task-shinyapp
+username:
+account: kubilay-yavuz
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3091577
+bundleId: 3780645
+url: https://kubilay-yavuz.shinyapps.io/recruitment-task-shinyapp/
+when: 1603646714.2433
+asMultiple: FALSE
+asStatic: FALSE

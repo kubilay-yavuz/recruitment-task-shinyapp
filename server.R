@@ -1,15 +1,6 @@
-getwd()
-setwd("C:/Users/Sthesk/Desktop/appsilon/")
-
-# install.packages("shiny.semantic")
-# install.packages("geosphere")
-# install.packages("leaflet.minicharts")
-# install.packages("leaflet")
-# install.packages("shiny", version = '0.14.2.9001')
-# install.packages("leaflet.providers")
-
 library("shiny")
 library("shiny.semantic")
+library("shinythemes")
 library("geosphere")
 library(leaflet.minicharts)
 library(leaflet)
@@ -17,57 +8,12 @@ library("leaflet.providers")
 library("data.table")
 library("ggplot2")
 
-options(shiny.custom.semantic = "styles/")
 
-ships.data <- fread("ships_data/ships.csv")
-ships.data[SHIPNAME == ". PRINCE OF WAVES", SHIPNAME := "PRINCE OF WAVES"]
-ships.data[SHIPNAME == ".WLA-311", SHIPNAME := "WLA-311"]
-ships.data <- ships.data[order(SHIPNAME, DATETIME),]
-
-
-euclid <- function(x1, x2) {
-  return (sqrt(rowSums((x1 - x2) ^ 2)))
-}
-
-
-ui <- semanticPage(
-  titlePanel("Appsilon Recruitment Task"),
-  sidebarLayout(sidebarPanel(
-    selectizeInput(
-      inputId = "portMenu",
-      label = "Select ports",
-      choices = c("All", unique(ships.data$PORT)),
-      selected = character(0),
-      multiple = F
-    ),
-    selectizeInput(
-      inputId = "vesselTypeMenu",
-      label = "Select vessel type",
-      choices = c("All types", unique(ships.data$ship_type)),
-      selected = character(0),
-      multiple = F
-    ),
-    selectizeInput(
-      inputId = "vesselNameMenu",
-      label = "Select vessel name",
-      choices = c("", unique(ships.data$SHIPNAME)),
-      selected = character(0),
-      multiple = F
-    )
-  ),
-  mainPanel(
-    leafletOutput(
-      outputId = "distPlot",
-      # width = "700px",
-      # height = "300px"
-    ),
-    textOutput(outputId = "distance")
-  )
-  )
-)
-
-server <- function(input, output, session) {
+function(input, output, session) {
   # buraya renderUI gelecek
+  euclid <- function(x1, x2) {
+    return (sqrt(rowSums((x1 - x2) ^ 2)))
+  }
   observeEvent(input$portMenu, {
     if(input$portMenu!="All"){
       updateSelectizeInput(session,
@@ -152,19 +98,19 @@ server <- function(input, output, session) {
         # ) %>%
         # addCircles(
         #   lonLats$LONShifted,
-        #   lonLats$LATShifted,
-        #   radius = 190,
-        #   stroke = FALSE,
-        #   fillOpacity = 0.4,
-        #   color = "red"
-        # ) %>%
-        # setView(lng = (lonLats$LON+lonLats$LONShifted)/2, lat = (lonLats$LAT+lonLats$LATShifted)/2, zoom = 12)
-        fitBounds(
-          lng1 = min(c(lonLats$LON, lonLats$LONShifted)),
-          lat1 = min(c(lonLats$LAT, lonLats$LATShifted)),
-          lng2 = max(c(lonLats$LON, lonLats$LONShifted)),
-          lat2 = max(c(lonLats$LAT, lonLats$LATShifted))
-        )
+      #   lonLats$LATShifted,
+      #   radius = 190,
+      #   stroke = FALSE,
+      #   fillOpacity = 0.4,
+      #   color = "red"
+      # ) %>%
+      # setView(lng = (lonLats$LON+lonLats$LONShifted)/2, lat = (lonLats$LAT+lonLats$LATShifted)/2, zoom = 12)
+      fitBounds(
+        lng1 = min(c(lonLats$LON, lonLats$LONShifted)),
+        lat1 = min(c(lonLats$LAT, lonLats$LATShifted)),
+        lng2 = max(c(lonLats$LON, lonLats$LONShifted)),
+        lat2 = max(c(lonLats$LAT, lonLats$LATShifted))
+      )
     }
     else{
       output$distance <- renderText({ "Please select a vessel to see the max distance" })
@@ -187,6 +133,3 @@ server <- function(input, output, session) {
     #         title = "<small>Deaths per 100,000</small>")
   })
 }
-
-
-shinyApp(ui = ui, server = server)
